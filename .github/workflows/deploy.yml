@@ -1,0 +1,19 @@
+name: Autobot
+
+on:
+  push:
+    branches:
+      - main  #Branch here
+
+jobs:
+  deploy:
+    runs-on: self-hosted  #Call bot just create
+    steps:
+      - name: Check folder now
+        run: |
+          cd /var/www/my-app
+          git fetch origin
+          git reset --hard origin/main
+          
+      - name: Success
+        run: echo "Server updated latest version!"
