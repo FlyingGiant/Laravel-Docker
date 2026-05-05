@@ -1,19 +1,24 @@
-name: Autobot
+name: Laravel auto deploy
 
 on:
   push:
-    branches:
-      - main  #Branch here
+    branches: [ main ]
 
 jobs:
   deploy:
-    runs-on: self-hosted  #Call bot just create
+    runs-on: self-hosted
+
     steps:
-      - name: Check folder now
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install composer
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Sync code from runner to server
+        run: rsync -avz --exclude '.git' . /var/www/my-app/
+
+      - name: Update Maria Database
         run: |
           cd /var/www/my-app
-          git fetch origin
-          git reset --hard origin/main
-          
-      - name: Success
-        run: echo "Server updated latest version!"
+          php artisan migrate --force
