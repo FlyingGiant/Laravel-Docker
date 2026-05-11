@@ -12,13 +12,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install composer
-        run: composer install --no-dev --optimize-autoloader
-
-      - name: Sync code from runner to server
-        run: rsync -avz --exclude '.git' . /var/www/my-app/
-
-      - name: Update Maria Database
+      - name: Build and restart docker
         run: |
           cd /var/www/my-app
-          php artisan migrate --force
+          docker compose down
+          docker compose up -d --build
+
+      - name: Run migrations
+        run: |
+          docker exec laravel_app php artisan migrate --force
