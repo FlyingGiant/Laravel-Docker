@@ -21,3 +21,20 @@ jobs:
       - name: Run migrations
         run: |
           docker exec laravel_app php artisan migrate --force
+      
+      - name: Telegram Success
+        if: success()
+        run: |
+          curl -s -X POST \
+            https://api.telegram.org/bot${{ secrets.7654709590:AAFUbwBdET2nKntT_a2_hIY_RBehKXn3pOs }}/sendMessage \
+            -d chat_id=${{ secrets.6113408920 }} \
+            -d text=" Deploy SUCCESS"
+
+      - name: Telegram Fail
+        if: failure()
+        run: |
+          curl -s -X POST \
+            https://api.telegram.org/bot${{ secrets.7654709590:AAFUbwBdET2nKntT_a2_hIY_RBehKXn3pOs }}/sendMessage \
+            -d chat_id=${{ secrets.6113408920 }} \
+            -d text=" Deploy FAILED"
+      
