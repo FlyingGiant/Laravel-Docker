@@ -26,15 +26,15 @@ jobs:
         if: success()
         run: |
           curl -s -X POST \
-            https://api.telegram.org/bot${{ secrets.7654709590:AAFUbwBdET2nKntT_a2_hIY_RBehKXn3pOs }}/sendMessage \
-            -d chat_id=${{ secrets.6113408920 }} \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -d text=" Deploy SUCCESS"
 
       - name: Telegram Fail
         if: failure()
         run: |
           curl -s -X POST \
-            https://api.telegram.org/bot${{ secrets.7654709590:AAFUbwBdET2nKntT_a2_hIY_RBehKXn3pOs }}/sendMessage \
-            -d chat_id=${{ secrets.6113408920 }} \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -d text=" Deploy FAILED"
       
