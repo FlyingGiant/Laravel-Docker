@@ -50,61 +50,45 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=password 
 
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
-    container_name: cadvisor
-    privileged: true
-    devices:
-      - /dev/kmsg
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro # Quan trọng cho Cgroup v2
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command:
-      - '--docker_only=true'
-      - '--housekeeping_interval=10s'
-      # Buộc cAdvisor tìm container trong slice của systemd
-      - '--raw_cgroup_prefix_whitelist=/system.slice' 
-    ports:
-      - "8080:8080"
-    restart: unless-stopped
-      
-  # netdata:
-  #   image: netdata/netdata:latest
-  #   container_name: netdata
-  #   pid: host
-  #   network_mode: host
-  #   restart: unless-stopped
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:v0.49.1
+  #   container_name: cadvisor
   #   privileged: true
-  #   cap_add:
-  #     - SYS_PTRACE
-  #     - SYS_ADMIN
-  #   security_opt:
-  #     - apparmor:unconfined
+  #   devices:
+  #     - /dev/kmsg
   #   volumes:
-  #     - netdataconfig:/etc/netdata
-  #     - netdatalib:/var/lib/netdata
-  #     - netdatacache:/var/cache/netdata
-  #     - /etc/passwd:/host/etc/passwd:ro
-  #     - /etc/group:/host/etc/group:ro
-  #     - /proc:/host/proc:ro
-  #     - /sys:/host/sys:ro
-  #     - /etc/os-release:/host/etc/os-release:ro
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #     - /dev/disk/:/dev/disk:ro
+  #     - /sys/fs/cgroup:/sys/fs/cgroup:ro # Quan trọng cho Cgroup v2
   #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #   environment:
-  #     - NETDATA_REGISTRY_CLOUD_BASE_URL=https://app.netdata.cloud
-
-  # db-exporter:
-  #   image: prom/mysqld-exporter:v0.15.1
-  #   container_name: mariadb_exporter
-  #   environment:
-  #     - DATA_SOURCE_NAME=root:root@(db:3306)/
-  #   depends_on:
-  #     - db
+  #   command:
+  #     - '--housekeeping_interval=10s'
+  #     # Buộc cAdvisor tìm container trong slice của systemd
+  #     - '--raw_cgroup_prefix_whitelist=/system.slice' 
+  #   ports:
+  #     - "8080:8080"
+  #   restart: unless-stopped
+      
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+    - 8080:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    depends_on:
+    - redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+    - 6379:6379
 
   node-exporter:
     image: prom/node-exporter:latest

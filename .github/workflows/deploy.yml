@@ -28,7 +28,11 @@ jobs:
           curl -s -X POST \
             https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d text="Laravel status: Deploy SUCCESS"
+            -d parse_mode=Markdown \
+            -d text="*Laravel Notification*
+              Job: ${{ github.event.head_commit.message }}
+              Date: $(date '+%Y-%m-%d %H:%M:%S')
+              Laravel status: Deploy SUCCESS!"
 
       - name: Telegram Fail
         if: failure()
@@ -36,5 +40,9 @@ jobs:
           curl -s -X POST \
             https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d text="Laravel status: Deploy FAILED!"
+            -d parse_mode=Markdown \
+            -d text="*Laravel Notification*
+              Job: ${{ github.event.head_commit.message }}
+              Date: $(date '+%Y-%m-%d %H:%M:%S')
+              Laravel status: Deploy FAILED!"
       
