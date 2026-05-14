@@ -21,7 +21,7 @@ services:
       - app
 
   db:
-    image: mariadb:11
+    image: mariadb:10.11
     container_name: laravel_db
     environment:
       MYSQL_DATABASE: laravel
@@ -32,6 +32,19 @@ services:
       - "3306:3306"
     volumes:
       - dbdata:/var/lib/mysql
+
+  mariadb-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: monitoring_mysqld_exporter
+    restart: unless-stopped
+    command:
+      - "--config.my-cnf=/cfg/.my.cnf"
+    volumes:
+      - ./docker/mysqld-exporter/.my.cnf:/cfg/.my.cnf:ro
+    ports:
+      - "9104:9104"
+    depends_on:
+      - db
 
   prometheus:
     image: prom/prometheus:latest
@@ -47,8 +60,12 @@ services:
     container_name: monitoring_grafana
     ports:
       - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=password 
+    dns:
+      - 8.8.8.8
 
   # cadvisor:
   #   image: gcr.io/cadvisor/cadvisor:v0.49.1
@@ -84,6 +101,7 @@ services:
     - /var/lib/docker/:/var/lib/docker:ro
     depends_on:
     - redis
+
   redis:
     image: redis:latest
     container_name: redis
@@ -115,7 +133,5 @@ services:
       - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml  
 
 volumes:
-  netdataconfig:
-  netdatalib:
-  netdatacache:
   dbdata:
+  grafana_data:

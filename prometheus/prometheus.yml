@@ -1,9 +1,6 @@
 global:
   scrape_interval: 15s
 
-rule_files:
-  - "alerts.yml"
-
 alerting:
   alertmanagers:
     - static_configs:
